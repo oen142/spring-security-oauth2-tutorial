@@ -3,10 +3,13 @@ package com.wani.springsecurityoauth2tutorial.common.utils;
 import io.jsonwebtoken.lang.Assert;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
+import org.springframework.util.SerializationUtils;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Base64;
 import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -47,4 +50,11 @@ public class CookieUtils {
         }
     }
 
+    public static String serialize(Object object) {
+        return Base64.getUrlEncoder().encodeToString(SerializationUtils.serialize(object));
+    }
+
+    public static <T> T deserialize(Cookie cookie, Class<T> clazz) {
+        return clazz.cast(SerializationUtils.deserialize(Base64.getUrlDecoder().decode(cookie.getValue())));
+    }
 }
