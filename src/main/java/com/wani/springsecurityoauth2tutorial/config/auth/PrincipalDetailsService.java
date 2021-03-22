@@ -15,11 +15,11 @@ public class PrincipalDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return PrincipalDetails.of(userRepository.findByUsername(username).orElseThrow(RuntimeException::new));
+        return PrincipalDetails.of(userRepository.findByUsername(username));
     }
 
     public PrincipalDetails findUserAuth(String username) {
         return PrincipalDetails.of(userRepository.findByUsername(username)
-                .orElseThrow(RuntimeException::new));
+        );
     }
 }

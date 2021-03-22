@@ -40,14 +40,27 @@ public class OAuth2DetailsService extends DefaultOAuth2UserService {
             oAuth2UserInfo = new NaverInfo((Map) (oAuth2User.getAttributes().get("response")));
         } else if (userRequest.getClientRegistration().getClientName().equals("Kakao")) {
             oAuth2UserInfo = new KakaoInfo((Map) (oAuth2User.getAttributes()));
+        } else if (userRequest.getClientRegistration().getClientName().equals("GitHub")) {
+            oAuth2UserInfo = new GithubInfo((Map) (oAuth2User.getAttributes()));
         }
 
-        User user = userRepository.findByUsername(oAuth2UserInfo.getUsername()).orElse(null);
+        System.out.println("oAuth2UserInfo = " + userRequest.getClientRegistration().getClientName());
+        Map<String, Object> attributes = oAuth2User.getAttributes();
+        attributes.forEach(
+                (it, st) -> {
+                    System.out.println("it = " + it);
+                    System.out.println("st = " + st);
+                }
+        );
+        User user = userRepository.findByUsername(oAuth2UserInfo.getUsername());
 
         UUID uuid = UUID.randomUUID();
         String encPassword = new BCryptPasswordEncoder().encode(uuid.toString());
 
         if (user == null) {
+
+            validUsername(oAuth2UserInfo);
+            validEmail(oAuth2UserInfo);
             User newUser = User.of(
                     oAuth2UserInfo.getUsername(), oAuth2UserInfo.getEmail(), encPassword
             );
@@ -64,6 +77,18 @@ public class OAuth2DetailsService extends DefaultOAuth2UserService {
                     new UsernamePasswordAuthenticationToken(principalUser, null, principalUser.getAuthorities())
             );
             return principalUser;
+        }
+    }
+
+    private void validEmail(OAuth2UserInfo oAuth2UserInfo) {
+        if(oAuth2UserInfo.getEmail() == null){
+            throw new RuntimeException("이메일이 널입니다.");
+        }
+    }
+
+    private void validUsername(OAuth2UserInfo oAuth2UserInfo) {
+        if(oAuth2UserInfo.getUsername() == null){
+            throw new RuntimeException("유저네임이 널입니다.");
         }
     }
 }

@@ -46,10 +46,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .addFilter(corsConfig.corsFilter())
                 .csrf().disable()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.NEVER)
-                .maximumSessions(2)
-                .and()
-                .and()
                 .addFilter(loginFilter)
                 .addFilter(jwtCheckFilter)
                 .httpBasic().disable()
